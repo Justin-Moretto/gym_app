@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 
 class ExerciseModel {
   final String name;
@@ -13,7 +12,7 @@ class ExerciseModel {
     this.weight = 0,
     this.reps = 0,
     this.sets = 0,
-    // List<MuscleModel> musclesTargeted = [],
+    List<MuscleModel> musclesTargeted = const [],
     DateTime? timeLastLogged,
   });
 }
