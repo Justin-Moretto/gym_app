@@ -18,6 +18,7 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFF5C446E),
       appBar: GymPalAppBar(),
       body: Row(
         children: [

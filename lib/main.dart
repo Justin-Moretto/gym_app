@@ -81,7 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 labelText: "My Data & Trends",
               ),
               MainPageButton(
-                backGroundColor: Colors.orange.shade300,
+                backGroundColor: Colors.deepPurpleAccent,
                 onPressed: () {
                   Navigator.push(
                     context,

@@ -9,7 +9,7 @@ class MainPageButton extends StatelessWidget {
     Key? key,
     required this.labelText,
     required this.onPressed,
-    this.backGroundColor = const Color(0xFF8764A1),
+    this.backGroundColor = const Color.fromRGBO(100, 70, 110, 1.0),
   }) : super(key: key);
 
   @override
@@ -20,12 +20,9 @@ class MainPageButton extends StatelessWidget {
         backgroundColor:
             backGroundColor, //?? Theme.of(context).colorScheme.primary,
         foregroundColor: Colors.white,
-        elevation: 4,
+        elevation: 20,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(32),
-          side: BorderSide(color: Colors.white, width: 2),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
       ),
       child: Text(
         labelText,
@@ -41,7 +38,7 @@ class GymPalAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: const Color(0xFF5C446E),
+      backgroundColor: Colors.transparent,
       title: Text(
         "Gym Pal",
         style: TextStyle(color: Colors.white, fontSize: 40),
