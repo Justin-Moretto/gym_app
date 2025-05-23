@@ -1,10 +1,9 @@
-
 class ExerciseModel {
   final String name;
   int weight;
   int reps;
   int sets;
-  // List<MuscleModel> musclesTargeted = [],
+  List<MuscleModel> musclesTargeted = [];
   DateTime? timeLastLogged;
 
   ExerciseModel({
@@ -26,7 +25,6 @@ class MuscleGroupModel {
     // required List<MuscleModel> muscles,
     this.imagePath = "assets/absImage.jpg",
   });
-
 }
 
 class MuscleModel {
