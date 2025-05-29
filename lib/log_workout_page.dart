@@ -39,6 +39,16 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
           MuscleModel(name: "Glutes", muscleGroup: "lower body"),
         ],
       ),
+      ExerciseModel(
+        name: "Dumbbell curl",
+        musclesTargeted: [
+          MuscleModel(name: "Biceps", muscleGroup: "upper body"),
+        ],
+      ),
+      ExerciseModel(
+        name: "Decline Sit-ups",
+        musclesTargeted: [MuscleModel(name: "Abs", muscleGroup: "Core")],
+      ),
     ];
     filteredExercises = List.from(placeholderData);
 
@@ -57,33 +67,73 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
 
   @override
   Widget build(BuildContext context) {
-    Widget exerciseContent;
+    Widget content;
 
     if (selectedExerciseName == null) {
-      exerciseContent = Expanded(
-        child: ListView.builder(
-          itemCount: filteredExercises.length,
-          itemBuilder: (context, index) {
-            final exercise = filteredExercises[index];
-            return Container(
-              color: const Color(0xFFDCCEEA),
-              child: ListTile(
-                title: Text(
-                  exercise.name,
-                  style: const TextStyle(color: Colors.black),
+      content = Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Search exercises:',
+              style: TextStyle(color: Colors.white),
+            ),
+            const SizedBox(height: 7),
+            TextField(
+              controller: searchController,
+              style: const TextStyle(color: Colors.black),
+              decoration: const InputDecoration(
+                hintText: 'Type to search',
+                border: OutlineInputBorder(
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.zero,
                 ),
-                onTap: () {
-                  setState(() {
-                    selectedExerciseName = exercise.name;
-                  });
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.zero,
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.zero,
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: ListView.builder(
+                itemCount: filteredExercises.length,
+                itemBuilder: (context, index) {
+                  final exercise = filteredExercises[index];
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: Colors.transparent,
+                      border: const Border(
+                        top: BorderSide(color: Colors.white, width: 1),
+                        bottom: BorderSide(color: Colors.white, width: 1),
+                        left: BorderSide(color: Colors.white, width: 2),
+                        right: BorderSide(color: Colors.white, width: 2),
+                      ),
+                    ),
+                    child: ListTile(
+                      title: Text(
+                        exercise.name,
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                      onTap: () {
+                        setState(() {
+                          selectedExerciseName = exercise.name;
+                        });
+                      },
+                    ),
+                  );
                 },
               ),
-            );
-          },
+            ),
+          ],
         ),
       );
     } else {
-      exerciseContent = Expanded(
+      content = Expanded(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -98,6 +148,7 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               decoration: const InputDecoration(hintText: 'Enter weight'),
+              style: const TextStyle(color: Colors.black),
             ),
             const SizedBox(height: 12),
             const Text('Sets', style: TextStyle(color: Colors.white)),
@@ -106,6 +157,7 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               decoration: const InputDecoration(hintText: 'Enter sets'),
+              style: const TextStyle(color: Colors.black),
             ),
             const SizedBox(height: 12),
             const Text('Reps', style: TextStyle(color: Colors.white)),
@@ -114,6 +166,7 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               decoration: const InputDecoration(hintText: 'Enter reps'),
+              style: const TextStyle(color: Colors.black),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
@@ -148,15 +201,7 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextField(
-              controller: searchController,
-              style: const TextStyle(color: Colors.black),
-              decoration: const InputDecoration(labelText: 'Search exercises'),
-            ),
-            const SizedBox(height: 16),
-            exerciseContent,
-          ],
+          children: [content],
         ),
       ),
     );
