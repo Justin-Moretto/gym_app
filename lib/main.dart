@@ -1,8 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:gym_app/custom_widgets.dart';
+import 'package:gym_app/exercise_history.dart';
 import 'package:gym_app/log_workout_page.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Supabase.initialize(
+    url: 'https://ypkpqorqsnsgeptjnlfh.supabase.co',
+    anonKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlwa3Bxb3Jxc25zZ2VwdGpubGZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg0ODY5MTksImV4cCI6MjA2NDA2MjkxOX0.IYGpokFAZnpvlL1AVgJZMJGgqi2igePVseoHg_ntlAI',
+  );
+
   runApp(const MyApp());
 }
 
@@ -72,7 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const LogWorkoutPage(),
+                      builder: (context) => const ExerciseHistoryPage(),
                     ),
                   );
                 },
@@ -94,7 +104,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const LogWorkoutPage(),
+                      builder: (context) => const ExerciseHistoryPage(),
                     ),
                   );
                 },

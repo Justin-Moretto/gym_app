@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gym_app/custom_widgets.dart';
 import 'package:gym_app/data_models.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class LogWorkoutPage extends StatefulWidget {
   const LogWorkoutPage({super.key});
@@ -62,6 +63,21 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
                 )
                 .toList();
       });
+    });
+  }
+
+  Future<void> logWorkout() async {
+    final supabase = Supabase.instance.client;
+    final response = await supabase.from('exercise_logs').insert({
+      'exercise_name': selectedExerciseName,
+      'weight': int.tryParse(weightController.text) ?? 0,
+      'sets': int.tryParse(setsController.text) ?? 0,
+      'reps': int.tryParse(repsController.text) ?? 0,
+      'timestamp': DateTime.now().toIso8601String(),
+    });
+    print("Insert response: $response");
+    setState(() {
+      selectedExerciseName = null;
     });
   }
 
@@ -170,11 +186,7 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {
-                print(
-                  "Logged: $selectedExerciseName - ${weightController.text} lbs, ${setsController.text} sets, ${repsController.text} reps",
-                );
-              },
+              onPressed: logWorkout,
               child: const Text("Log Workout"),
             ),
             TextButton(
