@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:gym_app/custom_widgets.dart';
 import 'package:gym_app/exercise_history.dart';
 import 'package:gym_app/log_workout_page.dart';
@@ -7,10 +8,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  await dotenv.load();
   await Supabase.initialize(
-    url: 'https://ypkpqorqsnsgeptjnlfh.supabase.co',
-    anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlwa3Bxb3Jxc25zZ2VwdGpubGZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg0ODY5MTksImV4cCI6MjA2NDA2MjkxOX0.IYGpokFAZnpvlL1AVgJZMJGgqi2igePVseoHg_ntlAI',
+    url: dotenv.env['SUPABASE_URL']!,
+    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
 
   runApp(const MyApp());
