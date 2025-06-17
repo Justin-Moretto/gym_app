@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gym_app/Constant.dart' as constant;
 
 class MainPageButton extends StatelessWidget {
   final String labelText;
@@ -33,16 +34,15 @@ class MainPageButton extends StatelessWidget {
 }
 
 class GymPalAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const GymPalAppBar({Key? key}) : super(key: key);
+  final String title;
+  const GymPalAppBar({Key? key, this.title = constant.appBarDefaultTitle})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
       backgroundColor: Colors.transparent,
-      title: Text(
-        "Gym Pal",
-        style: TextStyle(color: Colors.white, fontSize: 40),
-      ),
+      title: Text(title, style: TextStyle(color: Colors.white, fontSize: 40)),
       leading:
           Navigator.canPop(context)
               ? IconButton(

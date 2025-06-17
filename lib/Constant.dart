@@ -1,0 +1,1 @@
+const appBarDefaultTitle = "Gym Tracker";

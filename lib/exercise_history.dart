@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:gym_app/custom_widgets.dart' show GymPalAppBar;
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import 'custom_widgets.dart';
 
 class ExerciseHistoryPage extends StatelessWidget {
   const ExerciseHistoryPage({super.key});
@@ -10,15 +11,12 @@ class ExerciseHistoryPage extends StatelessWidget {
     final supabase = Supabase.instance.client;
 
     return Scaffold(
-      appBar: GymPalAppBar(
-        //title: const Text("Exercise History"),
-      ),
+      appBar: GymPalAppBar(title: "Exercise History"),
       backgroundColor: const Color(0xFF5C446E),
-      body: StreamBuilder<List<Map<String, dynamic>>>(
-        stream: supabase
-            .from('exercise_logs')
-            .stream(primaryKey: ['id'])
-            .order('timestamp', ascending: false),
+      body: FutureBuilder<List<Map<String, dynamic>>>(
+        future: supabase
+            .from('session_exercises')
+            .select('*, sessions(timestamp), exercises(name)'),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -35,20 +33,31 @@ class ExerciseHistoryPage extends StatelessWidget {
 
           final logs = snapshot.data!;
 
+          // ✅ Sort the logs by session timestamp in descending order
+          logs.sort((a, b) {
+            final t1 = DateTime.tryParse(a['sessions']['timestamp'] ?? '');
+            final t2 = DateTime.tryParse(b['sessions']['timestamp'] ?? '');
+            return t2!.compareTo(t1!);
+          });
+
           return ListView.builder(
             itemCount: logs.length,
             itemBuilder: (context, index) {
               final log = logs[index];
+              final timestamp = log['sessions']['timestamp'];
+              final exerciseName =
+                  log['exercises']?['name'] ?? 'Unknown Exercise';
+
               return ListTile(
                 title: Text(
-                  log['exercise_name'],
+                  exerciseName,
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 subtitle: Text(
-                  '${log['weight']} lbs | ${log['sets']} sets x ${log['reps']} reps\n${log['timestamp']}',
+                  '${log['weight']} lbs | ${log['sets']} sets x ${log['reps']} reps\n$timestamp',
                   style: const TextStyle(color: Colors.white70),
                 ),
               );

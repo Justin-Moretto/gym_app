@@ -17,67 +17,75 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
   final TextEditingController setsController = TextEditingController();
   final TextEditingController repsController = TextEditingController();
 
-  String? selectedExerciseName;
-
-  late final List<ExerciseModel> placeholderData;
+  List<ExerciseModel> allExercises = [];
   List<ExerciseModel> filteredExercises = [];
+  ExerciseModel? selectedExercise;
 
   @override
   void initState() {
     super.initState();
-    placeholderData = [
-      ExerciseModel(
-        name: "Bench",
-        musclesTargeted: [
-          MuscleModel(name: "Pectorals", muscleGroup: "upper body"),
-          MuscleModel(name: "Triceps", muscleGroup: "upper body"),
-        ],
-      ),
-      ExerciseModel(
-        name: "Squat",
-        musclesTargeted: [
-          MuscleModel(name: "Quads", muscleGroup: "lower body"),
-          MuscleModel(name: "Glutes", muscleGroup: "lower body"),
-        ],
-      ),
-      ExerciseModel(
-        name: "Dumbbell curl",
-        musclesTargeted: [
-          MuscleModel(name: "Biceps", muscleGroup: "upper body"),
-        ],
-      ),
-      ExerciseModel(
-        name: "Decline Sit-ups",
-        musclesTargeted: [MuscleModel(name: "Abs", muscleGroup: "Core")],
-      ),
-    ];
-    filteredExercises = List.from(placeholderData);
-
+    fetchExercises();
     searchController.addListener(() {
       final query = searchController.text.toLowerCase();
       setState(() {
         filteredExercises =
-            placeholderData
+            allExercises
                 .where(
-                  (exercise) => exercise.name.toLowerCase().contains(query),
+                  (exercise) => (exercise.name).toLowerCase().contains(query),
                 )
                 .toList();
       });
     });
   }
 
+  Future<void> fetchExercises() async {
+    final supabase = Supabase.instance.client;
+    final response = await supabase.from('exercises').select();
+    setState(() {
+      allExercises =
+          (response as List).map((e) => ExerciseModel.fromJson(e)).toList();
+      filteredExercises = allExercises;
+    });
+  }
+
   Future<void> logWorkout() async {
     final supabase = Supabase.instance.client;
-    final response = await supabase.from('exercise_logs').insert({
-      'exercise_name': selectedExerciseName,
+    final userId = supabase.auth.currentUser?.id;
+    print("Current user ID: $userId"); //debug
+
+    if (userId == null) {
+      print("User not signed in.");
+      return;
+    }
+    print(
+      "Access token: ${Supabase.instance.client.auth.currentSession?.accessToken}",
+    );
+
+    // Single insert and retrieve new session with user_id
+    final sessionResponse =
+        await supabase
+            .from('sessions')
+            .insert({
+              'user_id': userId,
+              'timestamp': DateTime.now().toIso8601String(),
+            })
+            .select()
+            .single();
+
+    final sessionId = sessionResponse['id'];
+
+    final response = await supabase.from('session_exercises').insert({
+      'session_id': sessionId,
+      'exercise_id': selectedExercise!.id,
       'weight': int.tryParse(weightController.text) ?? 0,
       'sets': int.tryParse(setsController.text) ?? 0,
       'reps': int.tryParse(repsController.text) ?? 0,
-      'timestamp': DateTime.now().toIso8601String(),
     });
+
     print("Insert response: $response");
+
     setState(() {
-      selectedExerciseName = null;
+      selectedExercise = null;
     });
   }
 
@@ -85,7 +93,7 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
   Widget build(BuildContext context) {
     Widget content;
 
-    if (selectedExerciseName == null) {
+    if (selectedExercise == null) {
       content = Expanded(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -137,7 +145,7 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
                       ),
                       onTap: () {
                         setState(() {
-                          selectedExerciseName = exercise.name;
+                          selectedExercise = exercise;
                         });
                       },
                     ),
@@ -154,7 +162,7 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              "Logging: $selectedExerciseName",
+              "Logging: ${selectedExercise!.name}",
               style: const TextStyle(fontSize: 18, color: Colors.white),
             ),
             const SizedBox(height: 16),
@@ -192,7 +200,7 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
             TextButton(
               onPressed: () {
                 setState(() {
-                  selectedExerciseName = null;
+                  selectedExercise = null;
                   searchController.clear();
                 });
               },

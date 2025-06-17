@@ -14,6 +14,29 @@ Future<void> main() async {
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
 
+  final supabase = Supabase.instance.client;
+
+  // Only sign in if not already logged in
+  if (supabase.auth.currentUser == null) {
+    final res = await supabase.auth.signInWithPassword(
+      email: dotenv.env['TEST_EMAIL']!,
+      password: 'Test1234',
+    );
+
+    if (res.user == null) {
+      throw Exception("Failed to sign in default user");
+    }
+
+    final userId = supabase.auth.currentUser!.id;
+
+    final existingProfile =
+        await supabase.from('profiles').select().eq('id', userId).maybeSingle();
+
+    if (existingProfile == null) {
+      await supabase.from('profiles').insert({'id': userId});
+    }
+  }
+
   runApp(const MyApp());
 }
 
