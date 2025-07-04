@@ -91,6 +91,7 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     Widget content;
 
     if (selectedExercise == null) {
@@ -98,25 +99,26 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Search exercises:',
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: theme.colorScheme.onBackground),
             ),
             const SizedBox(height: 7),
             TextField(
               controller: searchController,
-              style: const TextStyle(color: Colors.black),
-              decoration: const InputDecoration(
+              style: TextStyle(color: theme.colorScheme.onSurface),
+              decoration: InputDecoration(
                 hintText: 'Type to search',
-                border: OutlineInputBorder(
+                hintStyle: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6)),
+                border: const OutlineInputBorder(
                   borderSide: BorderSide.none,
                   borderRadius: BorderRadius.zero,
                 ),
-                enabledBorder: OutlineInputBorder(
+                enabledBorder: const OutlineInputBorder(
                   borderSide: BorderSide.none,
                   borderRadius: BorderRadius.zero,
                 ),
-                focusedBorder: OutlineInputBorder(
+                focusedBorder: const OutlineInputBorder(
                   borderSide: BorderSide.none,
                   borderRadius: BorderRadius.zero,
                 ),
@@ -131,17 +133,17 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
                   return Container(
                     decoration: BoxDecoration(
                       color: Colors.transparent,
-                      border: const Border(
-                        top: BorderSide(color: Colors.white, width: 1),
-                        bottom: BorderSide(color: Colors.white, width: 1),
-                        left: BorderSide(color: Colors.white, width: 2),
-                        right: BorderSide(color: Colors.white, width: 2),
+                      border: Border(
+                        top: BorderSide(color: theme.colorScheme.onBackground, width: 1),
+                        bottom: BorderSide(color: theme.colorScheme.onBackground, width: 1),
+                        left: BorderSide(color: theme.colorScheme.onBackground, width: 2),
+                        right: BorderSide(color: theme.colorScheme.onBackground, width: 2),
                       ),
                     ),
                     child: ListTile(
                       title: Text(
                         exercise.name,
-                        style: const TextStyle(color: Colors.white),
+                        style: TextStyle(color: theme.colorScheme.onBackground),
                       ),
                       onTap: () {
                         setState(() {
@@ -163,34 +165,43 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
           children: [
             Text(
               "Logging: ${selectedExercise!.name}",
-              style: const TextStyle(fontSize: 18, color: Colors.white),
+              style: TextStyle(fontSize: 18, color: theme.colorScheme.onBackground),
             ),
             const SizedBox(height: 16),
-            const Text('Weight (lbs)', style: TextStyle(color: Colors.white)),
+            Text('Weight (lbs)', style: TextStyle(color: theme.colorScheme.onBackground)),
             TextField(
               controller: weightController,
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              decoration: const InputDecoration(hintText: 'Enter weight'),
-              style: const TextStyle(color: Colors.black),
+              style: TextStyle(color: theme.colorScheme.onSurface),
+              decoration: InputDecoration(
+                hintText: 'Enter weight',
+                hintStyle: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6)),
+              ),
             ),
             const SizedBox(height: 12),
-            const Text('Sets', style: TextStyle(color: Colors.white)),
+            Text('Sets', style: TextStyle(color: theme.colorScheme.onBackground)),
             TextField(
               controller: setsController,
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              decoration: const InputDecoration(hintText: 'Enter sets'),
-              style: const TextStyle(color: Colors.black),
+              style: TextStyle(color: theme.colorScheme.onSurface),
+              decoration: InputDecoration(
+                hintText: 'Enter sets',
+                hintStyle: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6)),
+              ),
             ),
             const SizedBox(height: 12),
-            const Text('Reps', style: TextStyle(color: Colors.white)),
+            Text('Reps', style: TextStyle(color: theme.colorScheme.onBackground)),
             TextField(
               controller: repsController,
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              decoration: const InputDecoration(hintText: 'Enter reps'),
-              style: const TextStyle(color: Colors.black),
+              style: TextStyle(color: theme.colorScheme.onSurface),
+              decoration: InputDecoration(
+                hintText: 'Enter reps',
+                hintStyle: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6)),
+              ),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
@@ -204,9 +215,9 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
                   searchController.clear();
                 });
               },
-              child: const Text(
+              child: Text(
                 "Cancel",
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: theme.colorScheme.onBackground),
               ),
             ),
           ],
@@ -215,7 +226,7 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFF5C446E),
+      backgroundColor: theme.colorScheme.background,
       appBar: const GymPalAppBar(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

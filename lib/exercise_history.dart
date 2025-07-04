@@ -9,10 +9,11 @@ class ExerciseHistoryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final supabase = Supabase.instance.client;
+    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: GymPalAppBar(title: "Exercise History"),
-      backgroundColor: const Color(0xFF5C446E),
+      backgroundColor: theme.colorScheme.background,
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: supabase
             .from('session_exercises')
@@ -23,10 +24,10 @@ class ExerciseHistoryPage extends StatelessWidget {
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(
+            return Center(
               child: Text(
                 'No exercise logs found.',
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: theme.colorScheme.onBackground),
               ),
             );
           }
@@ -51,14 +52,14 @@ class ExerciseHistoryPage extends StatelessWidget {
               return ListTile(
                 title: Text(
                   exerciseName,
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: theme.colorScheme.onBackground,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 subtitle: Text(
                   '${log['weight']} lbs | ${log['sets']} sets x ${log['reps']} reps\n$timestamp',
-                  style: const TextStyle(color: Colors.white70),
+                  style: TextStyle(color: theme.colorScheme.onBackground.withOpacity(0.7)),
                 ),
               );
             },

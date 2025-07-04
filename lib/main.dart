@@ -3,6 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:gym_app/custom_widgets.dart';
 import 'package:gym_app/exercise_history.dart';
 import 'package:gym_app/log_workout_page.dart';
+import 'package:gym_app/styles/themes.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
@@ -33,7 +34,7 @@ Future<void> main() async {
         await supabase.from('profiles').select().eq('id', userId).maybeSingle();
 
     if (existingProfile == null) {
-      await supabase.from('profiles').insert({'id': userId});
+      await supabase.from('profiles').upsert({'id': userId});
     }
   }
 
@@ -47,29 +48,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Gym App',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        inputDecorationTheme: const InputDecorationTheme(
-          labelStyle: TextStyle(color: Colors.white),
-          floatingLabelStyle: TextStyle(
-            backgroundColor: Colors.white,
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-            fontSize: 14,
-          ),
-          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(16)),
-            borderSide: BorderSide(color: Colors.grey),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(16)),
-            borderSide: BorderSide(color: Colors.deepPurple),
-          ),
-          filled: true,
-          fillColor: Colors.white,
-        ),
-      ),
+      theme: AppThemes.lightTheme,
+      darkTheme: AppThemes.darkTheme,
+      themeMode: ThemeMode.dark, // Default to dark theme
       home: const MyHomePage(),
     );
   }
@@ -90,9 +71,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: GymPalAppBar(),
-      backgroundColor: Color(0xFF5C446E),
+      backgroundColor: theme.colorScheme.background,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(12.0),
@@ -135,7 +117,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 labelText: "My Data & Trends",
               ),
               MainPageButton(
-                backGroundColor: Colors.deepPurpleAccent,
+                backGroundColor: theme.colorScheme.tertiary,
                 onPressed: () {
                   Navigator.push(
                     context,
