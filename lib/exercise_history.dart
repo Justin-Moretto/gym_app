@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'custom_widgets.dart';
+import 'helpers.dart';
 
 class ExerciseHistoryPage extends StatelessWidget {
   const ExerciseHistoryPage({super.key});
@@ -58,7 +59,7 @@ class ExerciseHistoryPage extends StatelessWidget {
                   ),
                 ),
                 subtitle: Text(
-                  '${log['weight']} lbs | ${log['sets']} sets x ${log['reps']} reps\n$timestamp',
+                  '${Helpers.formatWeight(log['weight'])} | ${Helpers.formatSetsAndReps(log['sets'], log['reps'])}\n${Helpers.formatTimestamp(timestamp)}',
                   style: TextStyle(color: theme.colorScheme.onBackground.withOpacity(0.7)),
                 ),
               );
