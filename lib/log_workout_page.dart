@@ -54,39 +54,79 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
     print("Current user ID: $userId"); //debug
 
     if (userId == null) {
-      print("User not signed in.");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('User not signed in. Please log in again.'),
+          backgroundColor: Colors.red,
+        ),
+      );
       return;
     }
-    print(
-      "Access token: ${Supabase.instance.client.auth.currentSession?.accessToken}",
-    );
 
-    // Single insert and retrieve new session with user_id
-    final sessionResponse =
-        await supabase
-            .from('sessions')
-            .insert({
-              'user_id': userId,
-              'timestamp': DateTime.now().toIso8601String(),
-            })
-            .select()
-            .single();
+    // Validate input fields
+    if (weightController.text.isEmpty || setsController.text.isEmpty || repsController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please fill in all fields (weight, sets, and reps)'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
 
-    final sessionId = sessionResponse['id'];
+    try {
+      // Single insert and retrieve new session with user_id
+      final sessionResponse =
+          await supabase
+              .from('sessions')
+              .insert({
+                'user_id': userId,
+                'timestamp': DateTime.now().toIso8601String(),
+              })
+              .select()
+              .single();
 
-    final response = await supabase.from('session_exercises').insert({
-      'session_id': sessionId,
-      'exercise_id': selectedExercise!.id,
-      'weight': int.tryParse(weightController.text) ?? 0,
-      'sets': int.tryParse(setsController.text) ?? 0,
-      'reps': int.tryParse(repsController.text) ?? 0,
-    });
+      final sessionId = sessionResponse['id'];
 
-    print("Insert response: $response");
+      await supabase.from('session_exercises').insert({
+        'session_id': sessionId,
+        'exercise_id': selectedExercise!.id,
+        'weight': int.tryParse(weightController.text) ?? 0,
+        'sets': int.tryParse(setsController.text) ?? 0,
+        'reps': int.tryParse(repsController.text) ?? 0,
+      });
 
-    setState(() {
-      selectedExercise = null;
-    });
+      // Show success message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Successfully logged ${selectedExercise!.name} workout!'),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+
+      // Clear form and reset state
+      setState(() {
+        selectedExercise = null;
+        weightController.clear();
+        setsController.clear();
+        repsController.clear();
+      });
+
+    } catch (error) {
+      print("Error logging workout: $error");
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to log workout: ${error.toString()}'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+    }
   }
 
   @override
