@@ -53,16 +53,19 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       if (response.user != null) {
-        // Check if user profile exists, create if not
+        // Create user profile if it doesn't exist
         final userId = response.user!.id;
-        final existingProfile = await supabase
-            .from('profiles')
-            .select()
-            .eq('id', userId)
-            .maybeSingle();
-
-        if (existingProfile == null) {
+        try {
           await supabase.from('profiles').insert({'id': userId});
+        } catch (e) {
+          // Only ignore duplicate key errors, let other errors pass through
+          if (e.toString().contains('duplicate key value violates unique constraint')) {
+            // Profile already exists, which is fine
+            // We can ignore this error and continue
+          } else {
+            // Re-throw other errors
+            rethrow;
+          }
         }
 
         // Navigate to home page and clear the stack
