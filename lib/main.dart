@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:gym_app/home_page.dart';
-import 'package:gym_app/login_page.dart';
+import 'package:gym_app/pages/home_page.dart';
+import 'package:gym_app/pages/login_page.dart';
 import 'package:gym_app/styles/themes.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -57,7 +57,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
   Future<void> checkAuthStatus() async {
     final supabase = Supabase.instance.client;
     final session = supabase.auth.currentSession;
-    
+
     setState(() {
       isAuthenticated = session != null;
       isLoading = false;
@@ -69,9 +69,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
     if (isLoading) {
       return Scaffold(
         backgroundColor: Theme.of(context).colorScheme.background,
-        body: const Center(
-          child: CircularProgressIndicator(),
-        ),
+        body: const Center(child: CircularProgressIndicator()),
       );
     }
 

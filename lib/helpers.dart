@@ -67,11 +67,9 @@ class Helpers {
 
   /// Formats weight with proper units
   /// Example: 150 -> "150 lbs"
-  static String formatWeight(int? weight) {
-    if (weight == null || weight <= 0) {
-      return '0 lbs';
-    }
-    return '$weight lbs';
+  static String formatWeight(dynamic weight) {
+    final w = weight;// int.tryParse(weight.toString());
+    return w != null ? "$w lbs" : "- lbs";
   }
 
   /// Formats sets and reps in a readable format
@@ -80,6 +78,15 @@ class Helpers {
     final setsValue = sets ?? 0;
     final repsValue = reps ?? 0;
     return '$setsValue sets × $repsValue reps';
+  }
+
+  /// Formats reps in a readable format
+  /// Example: 10 -> "10 reps"
+  static String formatReps(dynamic reps) {
+    if (reps == null) return '-';
+    final r = reps; //int.tryParse(reps.toString());
+    if (r == null) return '-';
+    return r == 1 ? '1 rep' : '$r reps';
   }
 
   /// Validates if a string is a valid email format

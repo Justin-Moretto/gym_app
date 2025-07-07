@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:gym_app/custom_widgets.dart';
-import 'package:gym_app/exercise_history.dart';
-import 'package:gym_app/log_workout_page.dart';
+import 'package:gym_app/pages/exercise_history_page.dart';
+import 'package:gym_app/pages/log_workout_page.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -33,7 +33,7 @@ class _MyHomePageState extends State<MyHomePage> {
               // Log out the user
               final supabase = Supabase.instance.client;
               await supabase.auth.signOut();
-              
+
               // Navigate to login page and clear the stack
               if (mounted) {
                 Navigator.of(context).pushReplacementNamed('/login');
@@ -102,4 +102,4 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
-} 
+}

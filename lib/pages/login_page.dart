@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:gym_app/custom_widgets.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -59,7 +58,9 @@ class _LoginPageState extends State<LoginPage> {
           await supabase.from('profiles').insert({'id': userId});
         } catch (e) {
           // Only ignore duplicate key errors, let other errors pass through
-          if (e.toString().contains('duplicate key value violates unique constraint')) {
+          if (e.toString().contains(
+            'duplicate key value violates unique constraint',
+          )) {
             // Profile already exists, which is fine
             // We can ignore this error and continue
           } else {
@@ -94,7 +95,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Scaffold(
       backgroundColor: theme.colorScheme.background,
       body: SafeArea(
@@ -106,7 +107,7 @@ class _LoginPageState extends State<LoginPage> {
             children: [
               // App Title
               Text(
-                'Gym Tracker',
+                'LifTracker',
                 style: TextStyle(
                   fontSize: 48,
                   fontWeight: FontWeight.bold,
@@ -124,7 +125,7 @@ class _LoginPageState extends State<LoginPage> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 48),
-              
+
               // Email Field
               TextField(
                 controller: emailController,
@@ -143,7 +144,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               const SizedBox(height: 16),
-              
+
               // Password Field
               TextField(
                 controller: passwordController,
@@ -173,23 +174,21 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               const SizedBox(height: 32),
-              
+
               // Login Button
               ElevatedButton(
                 onPressed: isLoading ? null : login,
-                child: isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Text(
-                        'Sign In',
-                        style: TextStyle(fontSize: 18),
-                      ),
+                child:
+                    isLoading
+                        ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                        : const Text('Sign In', style: TextStyle(fontSize: 18)),
               ),
               const SizedBox(height: 16),
-              
+
               // Test Credentials Button
               TextButton(
                 onPressed: fillTestCredentials,
@@ -207,4 +206,4 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-} 
+}
