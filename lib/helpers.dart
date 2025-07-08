@@ -105,4 +105,11 @@ class Helpers {
       return word[0].toUpperCase() + word.substring(1).toLowerCase();
     }).join(' ');
   }
+
+  /// Formats a DateTime object to date only
+  /// Example: DateTime(2025, 3, 2) -> "Mar 2, 2025"
+  static String formatDate(DateTime date) {
+    final formatter = DateFormat('MMM d, yyyy');
+    return formatter.format(date);
+  }
 } 
