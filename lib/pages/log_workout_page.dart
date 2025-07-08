@@ -4,6 +4,12 @@ import 'package:gym_app/custom_widgets.dart';
 import 'package:gym_app/data_models.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+enum WorkoutPhase {
+  exerciseSelection,
+  loggingSets,
+  // selectDate, // Future phase
+}
+
 class LogWorkoutPage extends StatefulWidget {
   const LogWorkoutPage({super.key});
 
@@ -19,6 +25,7 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
   Map<String, List<Map<String, dynamic>>> setsPerExercise = {};
   Map<String, List<TextEditingController>> weightControllers = {};
   Map<String, List<TextEditingController>> repsControllers = {};
+  WorkoutPhase currentPhase = WorkoutPhase.exerciseSelection;
 
   @override
   void initState() {
@@ -117,6 +124,7 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
       setState(() {
         selectedExerciseIds.clear();
         setsPerExercise.clear();
+        currentPhase = WorkoutPhase.exerciseSelection;
         // Dispose all controllers
         for (final controllers in weightControllers.values) {
           for (final controller in controllers) {
@@ -163,7 +171,7 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            if (selected.isEmpty) ...[
+            if (currentPhase == WorkoutPhase.exerciseSelection) ...[
               TextField(
                 controller: searchController,
                 style: TextStyle(
@@ -178,35 +186,53 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
                   ),
                 ),
               ),
+              const SizedBox(height: 16),
               Expanded(
                 child: ListView.builder(
                   itemCount: filteredExercises.length,
                   itemBuilder: (context, index) {
                     final e = filteredExercises[index];
                     final selected = selectedExerciseIds.contains(e.id);
-                    return ListTile(
-                      title: Text(
-                        e.name,
-                        style: TextStyle(
-                          color: selected ? Colors.white : theme.colorScheme.onBackground,
-                          fontSize: 16,
-                          fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
-                        ),
+                    return Card(
+                      margin: const EdgeInsets.symmetric(vertical: 4),
+                      color: selected ? const Color(0xFF2A2A2A) : const Color(0xFF1A1A1A),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: selected 
+                          ? BorderSide(color: Colors.white.withOpacity(0.3), width: 1)
+                          : BorderSide.none,
                       ),
-                      trailing: selected ? const Icon(Icons.check, color: Colors.green, size: 24) : null,
-                      onTap: () => toggleExercise(e.id),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        leading: Icon(
+                          selected ? Icons.check_circle : Icons.radio_button_unchecked,
+                          color: selected ? Colors.green : Colors.grey,
+                          size: 24,
+                        ),
+                        title: Text(
+                          e.name,
+                          style: TextStyle(
+                            color: selected ? Colors.white : theme.colorScheme.onBackground,
+                            fontSize: 16,
+                            fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
+                          ),
+                        ),
+                        onTap: () => toggleExercise(e.id),
+                      ),
                     );
                   },
                 ),
               ),
               ElevatedButton(
-                onPressed: selectedExerciseIds.isEmpty ? null : () => setState(() {}),
+                onPressed: selectedExerciseIds.isEmpty ? null : () => setState(() {
+                  currentPhase = WorkoutPhase.loggingSets;
+                }),
                 child: const Text(
                   "Next: Log Sets",
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
               ),
-            ] else ...[
+            ] else if (currentPhase == WorkoutPhase.loggingSets) ...[
               Expanded(
                 child: ListView(
                   children: selected.map((e) {
@@ -323,6 +349,7 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
                 onPressed: () => setState(() {
                   selectedExerciseIds.clear();
                   setsPerExercise.clear();
+                  currentPhase = WorkoutPhase.exerciseSelection;
                   // Dispose all controllers
                   for (final controllers in weightControllers.values) {
                     for (final controller in controllers) {
