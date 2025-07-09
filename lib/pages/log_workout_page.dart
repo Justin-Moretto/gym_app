@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:gym_app/custom_widgets.dart';
 import 'package:gym_app/data_models.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:gym_app/styles/text_styles.dart';
 
 enum WorkoutPhase {
   exerciseSelection,
@@ -174,16 +175,10 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
             if (currentPhase == WorkoutPhase.exerciseSelection) ...[
               TextField(
                 controller: searchController,
-                style: TextStyle(
-                  color: theme.colorScheme.onSurface,
-                  fontSize: 16,
-                ),
+                style: AppTextStyles.withColor(AppTextStyles.inputField, theme.colorScheme.onSurface),
                 decoration: InputDecoration(
                   hintText: 'Search exercises...',
-                  hintStyle: TextStyle(
-                    color: theme.colorScheme.onSurface.withOpacity(0.6),
-                    fontSize: 16,
-                  ),
+                  hintStyle: AppTextStyles.withOpacity(AppTextStyles.inputHint, theme.colorScheme.onSurface, 0.6),
                 ),
               ),
               const SizedBox(height: 16),
@@ -211,10 +206,9 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
                         ),
                         title: Text(
                           e.name,
-                          style: TextStyle(
-                            color: selected ? Colors.white : theme.colorScheme.onBackground,
-                            fontSize: 16,
-                            fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
+                          style: AppTextStyles.withColor(
+                            selected ? AppTextStyles.listItemSelected : AppTextStyles.listItem,
+                            selected ? Colors.white : theme.colorScheme.onBackground,
                           ),
                         ),
                         onTap: () => toggleExercise(e.id),
@@ -229,7 +223,7 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
                 }),
                 child: const Text(
                   "Next: Log Sets",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  style: AppTextStyles.buttonSmall,
                 ),
               ),
             ] else if (currentPhase == WorkoutPhase.loggingSets) ...[
@@ -246,11 +240,7 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
                           children: [
                             Text(
                               e.name,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                                color: Colors.white,
-                              ),
+                              style: AppTextStyles.withColor(AppTextStyles.cardTitle, Colors.white),
                             ),
                             const SizedBox(height: 8),
                             for (int i = 0; i < sets.length; i++)
@@ -258,26 +248,16 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
                                 children: [
                                   Text(
                                     "(${i + 1}) ",
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w500,
-                                    ),
+                                    style: AppTextStyles.withColor(AppTextStyles.cardSubtitle, Colors.white),
                                   ),
                                   Expanded(
                                     child: TextField(
                                       controller: weightControllers[e.id]![i],
-                                      decoration: const InputDecoration(
+                                      decoration: InputDecoration(
                                         labelText: 'Weight',
-                                        labelStyle: TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.white70,
-                                        ),
+                                        labelStyle: AppTextStyles.withColor(AppTextStyles.inputLabel, Colors.white70),
                                       ),
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.white,
-                                      ),
+                                      style: AppTextStyles.withColor(AppTextStyles.inputField, Colors.white),
                                       keyboardType: TextInputType.number,
                                       inputFormatters: [
                                         FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))
@@ -289,17 +269,11 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
                                   Expanded(
                                     child: TextField(
                                       controller: repsControllers[e.id]![i],
-                                      decoration: const InputDecoration(
+                                      decoration: InputDecoration(
                                         labelText: 'Reps',
-                                        labelStyle: TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.white70,
-                                        ),
+                                        labelStyle: AppTextStyles.withColor(AppTextStyles.inputLabel, Colors.white70),
                                       ),
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.white,
-                                      ),
+                                      style: AppTextStyles.withColor(AppTextStyles.inputField, Colors.white),
                                       keyboardType: TextInputType.number,
                                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                                       onChanged: (val) => sets[i]['reps'] = val,
@@ -342,7 +316,7 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
                 onPressed: logWorkout,
                 child: const Text(
                   "Log Workout",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  style: AppTextStyles.buttonSmall,
                 ),
               ),
               TextButton(
@@ -364,13 +338,9 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
                   weightControllers.clear();
                   repsControllers.clear();
                 }),
-                child: const Text(
+                child: Text(
                   "Cancel",
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: AppTextStyles.withColor(AppTextStyles.buttonSecondary, Colors.white),
                 ),
               )
             ]

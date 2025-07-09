@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gym_app/Constant.dart' as constant;
+import 'package:gym_app/styles/text_styles.dart';
 
 class MainPageButton extends StatelessWidget {
   final String labelText;
@@ -27,11 +28,7 @@ class MainPageButton extends StatelessWidget {
       ),
       child: Text(
         labelText,
-        style: TextStyle(
-          color: theme.colorScheme.onSecondary,
-          fontSize: 32,
-          fontWeight: FontWeight.bold,
-        ),
+        style: AppTextStyles.withColor(AppTextStyles.mainPageButton, theme.colorScheme.onSecondary),
       ),
     );
   }

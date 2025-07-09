@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:gym_app/styles/text_styles.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -108,20 +109,13 @@ class _LoginPageState extends State<LoginPage> {
               // App Title
               Text(
                 'LifTracker',
-                style: TextStyle(
-                  fontSize: 48,
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.onBackground,
-                ),
+                style: AppTextStyles.withColor(AppTextStyles.appTitle, theme.colorScheme.onBackground),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
               Text(
                 'Sign in to continue',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: theme.colorScheme.onBackground.withOpacity(0.7),
-                ),
+                style: AppTextStyles.withOpacity(AppTextStyles.appSubtitle, theme.colorScheme.onBackground, 0.7),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 48),
@@ -185,7 +179,7 @@ class _LoginPageState extends State<LoginPage> {
                           width: 20,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                        : const Text('Sign In', style: TextStyle(fontSize: 18)),
+                        : const Text('Sign In', style: AppTextStyles.buttonPrimary),
               ),
               const SizedBox(height: 16),
 
@@ -194,10 +188,7 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: fillTestCredentials,
                 child: Text(
                   'Fill Test Credentials',
-                  style: TextStyle(
-                    color: theme.colorScheme.primary,
-                    fontSize: 16,
-                  ),
+                  style: AppTextStyles.withColor(AppTextStyles.buttonSecondary, theme.colorScheme.primary),
                 ),
               ),
             ],

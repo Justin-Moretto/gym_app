@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../custom_widgets.dart';
 import '../helpers.dart';
+import '../styles/text_styles.dart';
 
 class ExerciseHistoryPage extends StatefulWidget {
   const ExerciseHistoryPage({super.key});
@@ -208,8 +209,8 @@ class _ExerciseHistoryPageState extends State<ExerciseHistoryPage> {
       backgroundColor: theme.colorScheme.background,
       body: Column(
         children: [
-          // Date Selector
-          if (availableDates.isNotEmpty) ...[
+          // Date Selector - only show when not in recent lifts mode
+          if (availableDates.isNotEmpty && !showRecentLifts) ...[
             Container(
               padding: const EdgeInsets.all(16),
               child: Row(
@@ -244,11 +245,7 @@ class _ExerciseHistoryPageState extends State<ExerciseHistoryPage> {
                         selectedDate != null 
                             ? Helpers.formatDate(selectedDate!)
                             : 'Select Date',
-                        style: TextStyle(
-                          color: theme.colorScheme.onBackground,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: AppTextStyles.withColor(AppTextStyles.dateSelector, theme.colorScheme.onBackground),
                       ),
                     ),
                   ),
@@ -265,7 +262,9 @@ class _ExerciseHistoryPageState extends State<ExerciseHistoryPage> {
                 ],
               ),
             ),
-            // Recent Lifts Toggle Button
+          ],
+          // Recent Lifts Toggle Button - always visible
+          if (availableDates.isNotEmpty) ...[
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
@@ -279,10 +278,7 @@ class _ExerciseHistoryPageState extends State<ExerciseHistoryPage> {
                       ),
                       label: Text(
                         showRecentLifts ? 'Show by Date' : 'Show Recent Lifts',
-                        style: TextStyle(
-                          color: theme.colorScheme.onSecondary,
-                          fontSize: 14,
-                        ),
+                        style: AppTextStyles.withColor(AppTextStyles.buttonSecondary, theme.colorScheme.onSecondary),
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: theme.colorScheme.secondary,
@@ -348,11 +344,7 @@ class _ExerciseHistoryPageState extends State<ExerciseHistoryPage> {
                   children: [
                     Text(
                       exerciseName,
-                      style: TextStyle(
-                        color: theme.colorScheme.onBackground,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
+                      style: AppTextStyles.withColor(AppTextStyles.cardTitle, theme.colorScheme.onBackground),
                     ),
                     const SizedBox(height: 8),
                     Column(
@@ -363,10 +355,8 @@ class _ExerciseHistoryPageState extends State<ExerciseHistoryPage> {
                         final w = Helpers.formatWeight(set['weight']);
                         final r = Helpers.formatReps(set['reps']);
                         return Text(
-                          "Set $i: $w x $r reps",
-                          style: TextStyle(
-                            color: theme.colorScheme.onBackground.withOpacity(0.85),
-                          ),
+                          "Set $i: $w x $r",
+                          style: AppTextStyles.withOpacity(AppTextStyles.cardSubtitle, theme.colorScheme.onBackground, 0.85),
                         );
                       }).toList(),
                     )
@@ -399,64 +389,79 @@ class _ExerciseHistoryPageState extends State<ExerciseHistoryPage> {
 
         final logs = snapshot.data!;
 
-        return ListView.builder(
-          itemCount: logs.length,
-          itemBuilder: (context, index) {
-            final log = logs[index];
-            final timestamp = log['sessions']?['timestamp'];
+        // Group logs by date
+        final groupedLogs = <String, List<Map<String, dynamic>>>{};
+        for (final log in logs) {
+          final timestamp = log['sessions']?['timestamp'];
+          if (timestamp != null) {
+            final date = DateTime.parse(timestamp);
+            final dateKey = DateTime(date.year, date.month, date.day).toIso8601String();
+            groupedLogs.putIfAbsent(dateKey, () => []).add(log);
+          }
+        }
+        
+        // Sort dates (most recent first)
+        final sortedDates = groupedLogs.keys.toList()
+          ..sort((a, b) => DateTime.parse(b).compareTo(DateTime.parse(a)));
+        
+        // Create list items with date headers and cards
+        final listItems = <Widget>[];
+        for (final dateKey in sortedDates) {
+          final date = DateTime.parse(dateKey);
+          final dateLogs = groupedLogs[dateKey]!;
+          
+          // Add date header
+          listItems.add(
+            Container(
+              margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Text(
+                Helpers.formatDate(date),
+                style: AppTextStyles.withColor(AppTextStyles.dateHeader, theme.colorScheme.onBackground),
+              ),
+            ),
+          );
+          
+          // Add exercise cards for this date
+          for (final log in dateLogs) {
             final exerciseName = log['exercises']?['name'] ?? 'Unknown Exercise';
             final sets = (log['sets'] as List?) ?? [];
 
-            return Card(
-              margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            exerciseName,
-                            style: TextStyle(
-                              color: theme.colorScheme.onBackground,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
-                        Text(
-                          Helpers.formatTimestamp(timestamp),
-                          style: TextStyle(
-                            color: theme.colorScheme.onBackground.withOpacity(0.6),
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: sets.asMap().entries.map((entry) {
-                        final i = entry.key + 1;
-                        final set = entry.value;
-                        final w = Helpers.formatWeight(set['weight']);
-                        final r = Helpers.formatReps(set['reps']);
-                        return Text(
-                          "Set $i: $w x $r reps",
-                          style: TextStyle(
-                            color: theme.colorScheme.onBackground.withOpacity(0.85),
-                          ),
-                        );
-                      }).toList(),
-                    )
-                  ],
+            listItems.add(
+              Card(
+                margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        exerciseName,
+                        style: AppTextStyles.withColor(AppTextStyles.cardTitle, theme.colorScheme.onBackground),
+                      ),
+                      const SizedBox(height: 8),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: sets.asMap().entries.map((entry) {
+                          final i = entry.key + 1;
+                          final set = entry.value;
+                          final w = Helpers.formatWeight(set['weight']);
+                          final r = Helpers.formatReps(set['reps']);
+                          return Text(
+                            "Set $i: $w x $r reps",
+                            style: AppTextStyles.withOpacity(AppTextStyles.cardSubtitle, theme.colorScheme.onBackground, 0.85),
+                          );
+                        }).toList(),
+                      )
+                    ],
+                  ),
                 ),
               ),
             );
-          },
+          }
+        }
+
+        return ListView(
+          children: listItems,
         );
       },
     );

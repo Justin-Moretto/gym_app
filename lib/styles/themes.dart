@@ -31,7 +31,7 @@ class AppThemes {
       centerTitle: true,
       titleTextStyle: TextStyle(
         color: Colors.black87,
-        fontSize: 24,
+        fontSize: 28,
         fontWeight: FontWeight.bold,
       ),
       iconTheme: IconThemeData(color: Colors.black87),
@@ -43,7 +43,7 @@ class AppThemes {
         elevation: 8,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+        textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
       ),
     ),
     inputDecorationTheme: const InputDecorationTheme(
@@ -52,12 +52,12 @@ class AppThemes {
         backgroundColor: Colors.white,
         color: kPrimaryPurple,
         fontWeight: FontWeight.bold,
-        fontSize: 14,
+        fontSize: 16,
       ),
       contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(16)),
-        borderSide: BorderSide(color: Colors.grey),
+        borderSide: BorderSide(color: Colors.grey, width: 2),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(16)),
@@ -96,7 +96,7 @@ class AppThemes {
       centerTitle: true,
       titleTextStyle: TextStyle(
         color: Colors.white,
-        fontSize: 24,
+        fontSize: 28,
         fontWeight: FontWeight.bold,
       ),
       iconTheme: IconThemeData(color: Colors.white),
@@ -108,7 +108,7 @@ class AppThemes {
         elevation: 8,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+        textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
       ),
     ),
     inputDecorationTheme: const InputDecorationTheme(
@@ -117,12 +117,12 @@ class AppThemes {
         backgroundColor: Color(0xFF2A2A2A),
         color: kLightPurple,
         fontWeight: FontWeight.bold,
-        fontSize: 14,
+        fontSize: 16,
       ),
       contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(16)),
-        borderSide: BorderSide(color: Colors.grey),
+        borderSide: BorderSide(color: Colors.grey, width: 2),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(16)),
