@@ -55,13 +55,17 @@ class AppThemes {
         fontSize: 16,
       ),
       contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(16)),
+        borderSide: BorderSide(color: Colors.grey, width: 3),
+      ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(16)),
-        borderSide: BorderSide(color: Colors.grey, width: 2),
+        borderSide: BorderSide(color: Colors.grey, width: 3),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(16)),
-        borderSide: BorderSide(color: kPrimaryPurple, width: 2),
+        borderSide: BorderSide(color: kPrimaryPurple, width: 3),
       ),
       filled: true,
       fillColor: Colors.white,
@@ -120,13 +124,17 @@ class AppThemes {
         fontSize: 16,
       ),
       contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(16)),
+        borderSide: BorderSide(color: Colors.grey, width: 3),
+      ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(16)),
-        borderSide: BorderSide(color: Colors.grey, width: 2),
+        borderSide: BorderSide(color: Colors.grey, width: 3),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(16)),
-        borderSide: BorderSide(color: kLightPurple, width: 2),
+        borderSide: BorderSide(color: kLightPurple, width: 3),
       ),
       filled: true,
       fillColor: Color(0xFF2A2A2A),

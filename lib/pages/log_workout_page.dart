@@ -75,6 +75,9 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
     final weightControllersList = weightControllers[id]!;
     final repsControllersList = repsControllers[id]!;
     
+    // Check if we've reached the maximum of 10 sets
+    if (sets.length >= 10) return;
+    
     final lastWeightController = weightControllersList.last;
     final lastRepsController = repsControllersList.last;
     
@@ -243,13 +246,26 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
                               style: AppTextStyles.withColor(AppTextStyles.cardTitle, Colors.white),
                             ),
                             const SizedBox(height: 8),
-                            for (int i = 0; i < sets.length; i++)
-                              Row(
+                            Column(
+                              children: List.generate(sets.length, (i) => Padding(
+                                padding: EdgeInsets.only(bottom: i < sets.length - 1 ? 12.0 : 0),
+                                child: Row(
                                 children: [
-                                  Text(
-                                    "(${i + 1}) ",
-                                    style: AppTextStyles.withColor(AppTextStyles.cardSubtitle, Colors.white),
+                                  Container(
+                                    width: 32,
+                                    height: 32,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        "${i + 1}",
+                                        style: AppTextStyles.withColor(AppTextStyles.cardSubtitle, Colors.white),
+                                      ),
+                                    ),
                                   ),
+                                  const SizedBox(width: 12),
                                   Expanded(
                                     child: TextField(
                                       controller: weightControllers[e.id]![i],
@@ -280,19 +296,22 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
                                     ),
                                   ),
                                 ],
-                              ),
+                              )),
+                            ),
+                            ),
                             Align(
                               alignment: Alignment.centerLeft,
                               child: Row(
                                 children: [
-                                  IconButton(
-                                    onPressed: () => addSet(e.id),
-                                    icon: const Icon(
-                                      Icons.add_circle_outline,
-                                      color: Colors.white,
-                                      size: 28,
+                                  if (sets.length < 10)
+                                    IconButton(
+                                      onPressed: () => addSet(e.id),
+                                      icon: const Icon(
+                                        Icons.add_circle_outline,
+                                        color: Colors.white,
+                                        size: 28,
+                                      ),
                                     ),
-                                  ),
                                   if (sets.length > 1)
                                     IconButton(
                                       onPressed: () => removeSet(e.id, sets.length - 1),
@@ -302,6 +321,15 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
                                         size: 28,
                                       ),
                                     ),
+                                  const Spacer(),
+                                  IconButton(
+                                    onPressed: () => toggleExercise(e.id),
+                                    icon: const Icon(
+                                      Icons.delete_outline,
+                                      color: Colors.red,
+                                      size: 24,
+                                    ),
+                                  ),
                                 ],
                               ),
                             )
