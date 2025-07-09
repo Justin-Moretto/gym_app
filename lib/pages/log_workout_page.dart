@@ -101,6 +101,85 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
     });
   }
 
+  void _showAddExerciseModal() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.7,
+        decoration: const BoxDecoration(
+          color: Color(0xFF2A2A2A),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          children: [
+            // Handle bar
+            Container(
+              margin: const EdgeInsets.only(top: 8),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[600],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            // Title
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                'Add Exercise',
+                style: AppTextStyles.withColor(AppTextStyles.cardTitle, Colors.white),
+              ),
+            ),
+            // Search field
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: TextField(
+                style: AppTextStyles.withColor(AppTextStyles.inputField, Colors.white),
+                decoration: InputDecoration(
+                  hintText: 'Search exercises...',
+                  hintStyle: AppTextStyles.withOpacity(AppTextStyles.inputHint, Colors.white, 0.6),
+                ),
+                onChanged: (value) {
+                  // TODO: Implement search filtering
+                },
+              ),
+            ),
+            const SizedBox(height: 16),
+            // Exercise list
+            Expanded(
+              child: ListView.builder(
+                itemCount: allExercises.length,
+                itemBuilder: (context, index) {
+                  final exercise = allExercises[index];
+                  final isAlreadySelected = selectedExerciseIds.contains(exercise.id);
+                  
+                  return ListTile(
+                    title: Text(
+                      exercise.name,
+                      style: AppTextStyles.withColor(
+                        AppTextStyles.listItem,
+                        isAlreadySelected ? Colors.grey : Colors.white,
+                      ),
+                    ),
+                    trailing: isAlreadySelected 
+                      ? const Icon(Icons.check, color: Colors.grey)
+                      : null,
+                    onTap: isAlreadySelected ? null : () {
+                      toggleExercise(exercise.id);
+                      Navigator.pop(context);
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Future<void> logWorkout() async {
     final supabase = Supabase.instance.client;
     final userId = supabase.auth.currentUser?.id;
@@ -232,112 +311,142 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
             ] else if (currentPhase == WorkoutPhase.loggingSets) ...[
               Expanded(
                 child: ListView(
-                  children: selected.map((e) {
-                    final sets = setsPerExercise[e.id]!;
-                    return Card(
-                      margin: const EdgeInsets.symmetric(vertical: 8),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              e.name,
-                              style: AppTextStyles.withColor(AppTextStyles.cardTitle, Colors.white),
-                            ),
-                            const SizedBox(height: 8),
-                            Column(
-                              children: List.generate(sets.length, (i) => Padding(
-                                padding: EdgeInsets.only(bottom: i < sets.length - 1 ? 12.0 : 0),
-                                child: Row(
-                                children: [
-                                  Container(
-                                    width: 32,
-                                    height: 32,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        "${i + 1}",
-                                        style: AppTextStyles.withColor(AppTextStyles.cardSubtitle, Colors.white),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: TextField(
-                                      controller: weightControllers[e.id]![i],
-                                      decoration: InputDecoration(
-                                        labelText: 'Weight',
-                                        labelStyle: AppTextStyles.withColor(AppTextStyles.inputLabel, Colors.white70),
-                                      ),
-                                      style: AppTextStyles.withColor(AppTextStyles.inputField, Colors.white),
-                                      keyboardType: TextInputType.number,
-                                      inputFormatters: [
-                                        FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))
-                                      ],
-                                      onChanged: (val) => sets[i]['weight'] = val,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: TextField(
-                                      controller: repsControllers[e.id]![i],
-                                      decoration: InputDecoration(
-                                        labelText: 'Reps',
-                                        labelStyle: AppTextStyles.withColor(AppTextStyles.inputLabel, Colors.white70),
-                                      ),
-                                      style: AppTextStyles.withColor(AppTextStyles.inputField, Colors.white),
-                                      keyboardType: TextInputType.number,
-                                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                                      onChanged: (val) => sets[i]['reps'] = val,
-                                    ),
-                                  ),
-                                ],
-                              )),
-                            ),
-                            ),
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Row(
-                                children: [
-                                  if (sets.length < 10)
-                                    IconButton(
-                                      onPressed: () => addSet(e.id),
-                                      icon: const Icon(
-                                        Icons.add_circle_outline,
-                                        color: Colors.white,
-                                        size: 28,
-                                      ),
-                                    ),
-                                  if (sets.length > 1)
-                                    IconButton(
-                                      onPressed: () => removeSet(e.id, sets.length - 1),
-                                      icon: const Icon(
-                                        Icons.remove_circle_outline,
-                                        color: Colors.red,
-                                        size: 28,
-                                      ),
-                                    ),
-                                  const Spacer(),
-                                  IconButton(
-                                    onPressed: () => toggleExercise(e.id),
-                                    icon: const Icon(
-                                      Icons.delete_outline,
-                                      color: Colors.red,
-                                      size: 24,
-                                    ),
-                                  ),
-                                ],
+                  children: [
+                    ...selected.map((e) {
+                      final sets = setsPerExercise[e.id]!;
+                      return Card(
+                        margin: const EdgeInsets.symmetric(vertical: 8),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                e.name,
+                                style: AppTextStyles.withColor(AppTextStyles.cardTitle, Colors.white),
                               ),
-                            )
-                          ],
+                              const SizedBox(height: 8),
+                              Column(
+                                children: List.generate(sets.length, (i) => Padding(
+                                  padding: EdgeInsets.only(bottom: i < sets.length - 1 ? 12.0 : 0),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        width: 32,
+                                        height: 32,
+                                        decoration: BoxDecoration(
+                                          color: Colors.white.withOpacity(0.1),
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            "${i + 1}",
+                                            style: AppTextStyles.withColor(AppTextStyles.cardSubtitle, Colors.white),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: TextField(
+                                          controller: weightControllers[e.id]![i],
+                                          decoration: InputDecoration(
+                                            labelText: 'Weight',
+                                            labelStyle: AppTextStyles.withColor(AppTextStyles.inputLabel, Colors.white70),
+                                          ),
+                                          style: AppTextStyles.withColor(AppTextStyles.inputField, Colors.white),
+                                          keyboardType: TextInputType.number,
+                                          inputFormatters: [
+                                            FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))
+                                          ],
+                                          onChanged: (val) => sets[i]['weight'] = val,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: TextField(
+                                          controller: repsControllers[e.id]![i],
+                                          decoration: InputDecoration(
+                                            labelText: 'Reps',
+                                            labelStyle: AppTextStyles.withColor(AppTextStyles.inputLabel, Colors.white70),
+                                          ),
+                                          style: AppTextStyles.withColor(AppTextStyles.inputField, Colors.white),
+                                          keyboardType: TextInputType.number,
+                                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                          onChanged: (val) => sets[i]['reps'] = val,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )),
+                              ),
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Row(
+                                  children: [
+                                    if (sets.length < 10)
+                                      IconButton(
+                                        onPressed: () => addSet(e.id),
+                                        icon: const Icon(
+                                          Icons.add_circle_outline,
+                                          color: Colors.white,
+                                          size: 28,
+                                        ),
+                                      ),
+                                    if (sets.length > 1)
+                                      IconButton(
+                                        onPressed: () => removeSet(e.id, sets.length - 1),
+                                        icon: const Icon(
+                                          Icons.remove_circle_outline,
+                                          color: Colors.red,
+                                          size: 28,
+                                        ),
+                                      ),
+                                    const Spacer(),
+                                    IconButton(
+                                      onPressed: () => toggleExercise(e.id),
+                                      icon: const Icon(
+                                        Icons.delete_outline,
+                                        color: Colors.red,
+                                        size: 24,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                    // Add Exercise Card
+                    Card(
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      child: InkWell(
+                        onTap: _showAddExerciseModal,
+                        borderRadius: BorderRadius.circular(12),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.add_circle_outline,
+                                color: Colors.white.withOpacity(0.7),
+                                size: 24,
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                'Add Exercise',
+                                style: AppTextStyles.withColor(
+                                  AppTextStyles.cardTitle,
+                                  Colors.white.withOpacity(0.7),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    );
-                  }).toList(),
+                    ),
+                  ],
                 ),
               ),
               ElevatedButton(
