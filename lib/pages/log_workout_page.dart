@@ -27,6 +27,8 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
   Map<String, List<TextEditingController>> weightControllers = {};
   Map<String, List<TextEditingController>> repsControllers = {};
   WorkoutPhase currentPhase = WorkoutPhase.exerciseSelection;
+  // Track invalid fields: key = 'exerciseId_setIndex_weight' or 'exerciseId_setIndex_reps'
+  Set<String> invalidFields = {};
 
   @override
   void initState() {
@@ -181,6 +183,37 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
   }
 
   Future<void> logWorkout() async {
+    // Validate all fields before submitting
+    bool hasInvalid = false;
+    Set<String> newInvalidFields = {};
+    for (final id in selectedExerciseIds) {
+      final sets = setsPerExercise[id]!;
+      for (int i = 0; i < sets.length; i++) {
+        final weight = weightControllers[id]![i].text.trim();
+        final reps = repsControllers[id]![i].text.trim();
+        if (weight.isEmpty) {
+          newInvalidFields.add('${id}_${i}_weight');
+          hasInvalid = true;
+        }
+        if (reps.isEmpty) {
+          newInvalidFields.add('${id}_${i}_reps');
+          hasInvalid = true;
+        }
+      }
+    }
+    setState(() {
+      invalidFields = newInvalidFields;
+    });
+    if (hasInvalid) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please fill in all weight and reps fields.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     final supabase = Supabase.instance.client;
     final userId = supabase.auth.currentUser?.id;
     if (userId == null) return;
@@ -246,6 +279,13 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
     final selected = allExercises
         .where((e) => selectedExerciseIds.contains(e.id))
         .toList();
+
+    // Helper to get the border from the theme and override only the color
+    OutlineInputBorder getBorder(Color color) {
+      final defaultBorder = theme.inputDecorationTheme.border as OutlineInputBorder?;
+      return (defaultBorder ?? OutlineInputBorder(borderRadius: BorderRadius.circular(8)))
+          .copyWith(borderSide: BorderSide(color: color, width: 3));
+    }
 
     return Scaffold(
       appBar: const GymPalAppBar(),
@@ -352,13 +392,26 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
                                           decoration: InputDecoration(
                                             labelText: 'Weight',
                                             labelStyle: AppTextStyles.withColor(AppTextStyles.inputLabel, Colors.white70),
+                                            border: getBorder(Colors.white.withOpacity(0.3)),
+                                            enabledBorder: getBorder(Colors.white.withOpacity(0.3)),
+                                            focusedBorder: getBorder(
+                                              invalidFields.contains('${e.id}_${i}_weight') ? Colors.red : Colors.white,
+                                            ),
+                                            errorBorder: getBorder(Colors.red),
                                           ),
                                           style: AppTextStyles.withColor(AppTextStyles.inputField, Colors.white),
                                           keyboardType: TextInputType.number,
                                           inputFormatters: [
                                             FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))
                                           ],
-                                          onChanged: (val) => sets[i]['weight'] = val,
+                                          onChanged: (val) {
+                                            sets[i]['weight'] = val;
+                                            if (val.isNotEmpty) {
+                                              setState(() {
+                                                invalidFields.remove('${e.id}_${i}_weight');
+                                              });
+                                            }
+                                          },
                                         ),
                                       ),
                                       const SizedBox(width: 8),
@@ -368,11 +421,24 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
                                           decoration: InputDecoration(
                                             labelText: 'Reps',
                                             labelStyle: AppTextStyles.withColor(AppTextStyles.inputLabel, Colors.white70),
+                                            border: getBorder(Colors.white.withOpacity(0.3)),
+                                            enabledBorder: getBorder(Colors.white.withOpacity(0.3)),
+                                            focusedBorder: getBorder(
+                                              invalidFields.contains('${e.id}_${i}_reps') ? Colors.red : Colors.white,
+                                            ),
+                                            errorBorder: getBorder(Colors.red),
                                           ),
                                           style: AppTextStyles.withColor(AppTextStyles.inputField, Colors.white),
                                           keyboardType: TextInputType.number,
                                           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                                          onChanged: (val) => sets[i]['reps'] = val,
+                                          onChanged: (val) {
+                                            sets[i]['reps'] = val;
+                                            if (val.isNotEmpty) {
+                                              setState(() {
+                                                invalidFields.remove('${e.id}_${i}_reps');
+                                              });
+                                            }
+                                          },
                                         ),
                                       ),
                                     ],
