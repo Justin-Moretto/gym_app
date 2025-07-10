@@ -5,6 +5,8 @@ import 'package:gym_app/pages/exercise_history_page.dart';
 import 'package:gym_app/pages/log_workout_page.dart';
 import 'package:gym_app/pages/exercise_library_page.dart';
 import 'package:gym_app/pages/settings_page.dart';
+import 'package:gym_app/styles/text_styles.dart';
+import 'package:gym_app/helpers.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -14,9 +16,50 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  int? daysSinceLastSession;
+
   @override
   void initState() {
     super.initState();
+    _loadLastSession();
+  }
+
+  Future<void> _loadLastSession() async {
+    final supabase = Supabase.instance.client;
+    final userId = supabase.auth.currentUser?.id;
+
+    if (userId == null) return;
+
+    try {
+      // Get the most recent session (like exercise history page does)
+      final response = await supabase
+          .from('sessions')
+          .select('timestamp')
+          .order('timestamp', ascending: false)
+          .limit(1);
+
+      if (response.isNotEmpty) {
+        final lastSessionTimestamp = response[0]['timestamp'] as String;
+        final lastSessionDate = DateTime.parse(lastSessionTimestamp);
+        final now = DateTime.now();
+        
+        // Calculate days difference
+        final difference = now.difference(lastSessionDate).inDays;
+        
+        setState(() {
+          daysSinceLastSession = difference;
+        });
+      } else {
+        setState(() {
+          daysSinceLastSession = null;
+        });
+      }
+    } catch (e) {
+      print('Error loading last session: $e');
+      setState(() {
+        daysSinceLastSession = null;
+      });
+    }
   }
 
   @override
@@ -94,6 +137,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
                 labelText: "Log New Workout",
               ),
+              const SizedBox(height: 24),
+              buildDaysSinceLastSessionText(daysSinceLastSession),
             ],
           ),
         ),

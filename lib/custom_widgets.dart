@@ -93,3 +93,30 @@ class GymPalCard extends StatelessWidget {
     );
   }
 }
+
+/// Creates a styled text widget for days since last session
+/// Example: 1 -> "It's been 1 day since your last session"
+/// Example: 5 -> "It's been 5 days since your last session"
+Widget buildDaysSinceLastSessionText(int? daysSinceLastSession) {
+  if (daysSinceLastSession == null) {
+    return Text(
+      "Welcome! Log your first workout to get started.",
+      style: const TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.w600,
+        color: Color(0xFFA86BFF),
+      ),
+      textAlign: TextAlign.center,
+    );
+  }
+
+  return Text(
+    "It's been $daysSinceLastSession ${daysSinceLastSession == 1 ? 'day' : 'days'} since your last session",
+    style: const TextStyle(
+      fontSize: 24,
+      fontWeight: FontWeight.w600,
+      color: Color(0xFFA86BFF),
+    ),
+    textAlign: TextAlign.center,
+  );
+}
