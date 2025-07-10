@@ -157,6 +157,10 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                               AppTextStyles.cardSubtitle,
                               theme.colorScheme.onSecondary,
                             ),
+                            side: BorderSide(
+                              color: theme.colorScheme.onSecondary.withOpacity(0.3),
+                              width: 2,
+                            ),
                           ),
                         )
                         .toList(),

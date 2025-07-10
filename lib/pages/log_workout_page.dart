@@ -312,25 +312,25 @@ class _LogWorkoutPageState extends State<LogWorkoutPage> {
                     final selected = selectedExerciseIds.contains(e.id);
                     return Card(
                       margin: const EdgeInsets.symmetric(vertical: 4),
-                      color: selected ? const Color(0xFF2A2A2A) : const Color(0xFF1A1A1A),
+                      color: selected ? theme.colorScheme.primary : theme.colorScheme.surface,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                         side: selected 
-                          ? BorderSide(color: Colors.white.withOpacity(0.3), width: 1)
+                          ? BorderSide(color: theme.colorScheme.onPrimary.withOpacity(0.3), width: 1)
                           : BorderSide.none,
                       ),
                       child: ListTile(
                         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                         leading: Icon(
                           selected ? Icons.check_circle : Icons.radio_button_unchecked,
-                          color: selected ? Colors.green : Colors.grey,
+                          color: selected ? Colors.green : theme.colorScheme.onSurface.withOpacity(0.6),
                           size: 24,
                         ),
                         title: Text(
                           e.name,
                           style: AppTextStyles.withColor(
                             selected ? AppTextStyles.listItemSelected : AppTextStyles.listItem,
-                            selected ? Colors.white : theme.colorScheme.onBackground,
+                            selected ? theme.colorScheme.onPrimary : theme.colorScheme.onSurface,
                           ),
                         ),
                         onTap: () => toggleExercise(e.id),

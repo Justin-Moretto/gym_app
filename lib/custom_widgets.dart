@@ -22,9 +22,9 @@ class MainPageButton extends StatelessWidget {
       style: ElevatedButton.styleFrom(
         backgroundColor: backGroundColor ?? theme.colorScheme.secondary,
         foregroundColor: theme.colorScheme.onSecondary,
-        elevation: 20,
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
+        elevation: 8,
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
       child: Text(
         labelText,
