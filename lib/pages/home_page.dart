@@ -4,6 +4,7 @@ import 'package:gym_app/custom_widgets.dart';
 import 'package:gym_app/pages/exercise_history_page.dart';
 import 'package:gym_app/pages/log_workout_page.dart';
 import 'package:gym_app/pages/exercise_library_page.dart';
+import 'package:gym_app/pages/settings_page.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -30,15 +31,11 @@ class _MyHomePageState extends State<MyHomePage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
-            onPressed: () async {
-              // Log out the user
-              final supabase = Supabase.instance.client;
-              await supabase.auth.signOut();
-              
-              // Navigate to login page and clear the stack
-              if (mounted) {
-                Navigator.of(context).pushReplacementNamed('/login');
-              }
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsPage()),
+              );
             },
           ),
         ],

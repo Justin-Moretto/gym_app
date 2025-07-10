@@ -4,8 +4,19 @@ import 'package:gym_app/pages/home_page.dart';
 import 'package:gym_app/pages/login_page.dart';
 import 'package:gym_app/styles/themes.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:provider/provider.dart';
 
-Future<void> main() async {
+class ThemeModeNotifier extends ChangeNotifier {
+  ThemeMode _themeMode = ThemeMode.system;
+  ThemeMode get themeMode => _themeMode;
+
+  void setThemeMode(ThemeMode mode) {
+    _themeMode = mode;
+    notifyListeners();
+  }
+}
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await dotenv.load();
@@ -14,7 +25,12 @@ Future<void> main() async {
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
 
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => ThemeModeNotifier(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -22,16 +38,20 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Gym App',
-      theme: AppThemes.lightTheme,
-      darkTheme: AppThemes.darkTheme,
-      themeMode: ThemeMode.dark, // Default to dark theme
-      initialRoute: '/',
-      routes: {
-        '/': (context) => const AuthWrapper(),
-        '/home': (context) => const MyHomePage(),
-        '/login': (context) => const LoginPage(),
+    return Consumer<ThemeModeNotifier>(
+      builder: (context, themeNotifier, _) {
+        return MaterialApp(
+          title: 'Gym App',
+          theme: AppThemes.lightTheme,
+          darkTheme: AppThemes.darkTheme,
+          themeMode: themeNotifier.themeMode,
+          initialRoute: '/',
+          routes: {
+            '/': (context) => const AuthWrapper(),
+            '/home': (context) => const MyHomePage(),
+            '/login': (context) => const LoginPage(),
+          },
+        );
       },
     );
   }
