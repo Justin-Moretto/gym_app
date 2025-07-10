@@ -335,33 +335,30 @@ class _ExerciseHistoryPageState extends State<ExerciseHistoryPage> {
             final exerciseName = log['exercises']?['name'] ?? 'Unknown Exercise';
             final sets = (log['sets'] as List?) ?? [];
 
-            return Card(
+            return GymPalCard(
               margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      exerciseName,
-                      style: AppTextStyles.withColor(AppTextStyles.cardTitle, theme.colorScheme.onBackground),
-                    ),
-                    const SizedBox(height: 8),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: sets.asMap().entries.map((entry) {
-                        final i = entry.key + 1;
-                        final set = entry.value;
-                        final w = Helpers.formatWeight(set['weight']);
-                        final r = Helpers.formatReps(set['reps']);
-                        return Text(
-                          "Set $i: $w x $r",
-                          style: AppTextStyles.withOpacity(AppTextStyles.cardSubtitle, theme.colorScheme.onBackground, 0.85),
-                        );
-                      }).toList(),
-                    )
-                  ],
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    exerciseName,
+                    style: AppTextStyles.withColor(AppTextStyles.cardTitle, theme.colorScheme.onBackground),
+                  ),
+                  const SizedBox(height: 8),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: sets.asMap().entries.map((entry) {
+                      final i = entry.key + 1;
+                      final set = entry.value;
+                      final w = Helpers.formatWeight(set['weight']);
+                      final r = Helpers.formatReps(set['reps']);
+                      return Text(
+                        "Set $i: $w x $r",
+                        style: AppTextStyles.withOpacity(AppTextStyles.cardSubtitle, theme.colorScheme.onBackground, 0.85),
+                      );
+                    }).toList(),
+                  )
+                ],
               ),
             );
           },
@@ -427,33 +424,30 @@ class _ExerciseHistoryPageState extends State<ExerciseHistoryPage> {
             final sets = (log['sets'] as List?) ?? [];
 
             listItems.add(
-              Card(
+              GymPalCard(
                 margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        exerciseName,
-                        style: AppTextStyles.withColor(AppTextStyles.cardTitle, theme.colorScheme.onBackground),
-                      ),
-                      const SizedBox(height: 8),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: sets.asMap().entries.map((entry) {
-                          final i = entry.key + 1;
-                          final set = entry.value;
-                          final w = Helpers.formatWeight(set['weight']);
-                          final r = Helpers.formatReps(set['reps']);
-                          return Text(
-                            "Set $i: $w x $r reps",
-                            style: AppTextStyles.withOpacity(AppTextStyles.cardSubtitle, theme.colorScheme.onBackground, 0.85),
-                          );
-                        }).toList(),
-                      )
-                    ],
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      exerciseName,
+                      style: AppTextStyles.withColor(AppTextStyles.cardTitle, theme.colorScheme.onBackground),
+                    ),
+                    const SizedBox(height: 8),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: sets.asMap().entries.map((entry) {
+                        final i = entry.key + 1;
+                        final set = entry.value;
+                        final w = Helpers.formatWeight(set['weight']);
+                        final r = Helpers.formatReps(set['reps']);
+                        return Text(
+                          "Set $i: $w x $r reps",
+                          style: AppTextStyles.withOpacity(AppTextStyles.cardSubtitle, theme.colorScheme.onBackground, 0.85),
+                        );
+                      }).toList(),
+                    )
+                  ],
                 ),
               ),
             );

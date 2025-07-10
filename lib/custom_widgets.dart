@@ -64,3 +64,32 @@ class GymPalAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize => const Size.fromHeight(56.0);
 }
+
+class GymPalCard extends StatelessWidget {
+  final Widget child;
+  final EdgeInsetsGeometry? padding;
+  final EdgeInsetsGeometry? margin;
+  final Color? color;
+
+  const GymPalCard({
+    Key? key,
+    required this.child,
+    this.padding,
+    this.margin,
+    this.color,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Card(
+      color: color ?? theme.cardColor,
+      margin: margin ?? const EdgeInsets.symmetric(vertical: 6, horizontal: 0),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: padding ?? const EdgeInsets.all(12),
+        child: child,
+      ),
+    );
+  }
+}

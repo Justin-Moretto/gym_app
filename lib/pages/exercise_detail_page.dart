@@ -174,34 +174,32 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                 ),
               ),
               const SizedBox(height: 8),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    children: [
-                      Icon(Icons.emoji_events, color: Colors.amber, size: 32),
-                      const SizedBox(width: 16),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '${personalRecord!['weight']} lbs',
-                            style: AppTextStyles.withColor(
-                              AppTextStyles.cardTitleLarge,
-                              theme.colorScheme.onBackground,
-                            ),
+              GymPalCard(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Icon(Icons.emoji_events, color: Colors.amber, size: 32),
+                    const SizedBox(width: 16),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${personalRecord!['weight']} lbs',
+                          style: AppTextStyles.withColor(
+                            AppTextStyles.cardTitleLarge,
+                            theme.colorScheme.onBackground,
                           ),
-                          Text(
-                            '${personalRecord!['reps']} reps',
-                            style: AppTextStyles.withColor(
-                              AppTextStyles.cardSubtitle,
-                              theme.colorScheme.onBackground,
-                            ),
+                        ),
+                        Text(
+                          '${personalRecord!['reps']} reps',
+                          style: AppTextStyles.withColor(
+                            AppTextStyles.cardSubtitle,
+                            theme.colorScheme.onBackground,
                           ),
-                        ],
-                      ),
-                    ],
-                  ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 24),
@@ -221,65 +219,60 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                 final timestamp = session['sessions']?['timestamp'];
                 final sets = session['sets'] as List;
 
-                return Card(
+                return GymPalCard(
                   margin: const EdgeInsets.symmetric(vertical: 6),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              Helpers.formatTimestamp(timestamp),
-                              style: AppTextStyles.withColor(
-                                AppTextStyles.cardSubtitle,
-                                theme.colorScheme.onBackground,
-                              ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            Helpers.formatTimestamp(timestamp),
+                            style: AppTextStyles.withColor(
+                              AppTextStyles.cardSubtitle,
+                              theme.colorScheme.onBackground,
                             ),
-                            Text(
-                              '${sets.length} sets',
-                              style: AppTextStyles.withColor(
-                                AppTextStyles.cardSubtitle,
-                                theme.colorScheme.onBackground,
-                              ),
+                          ),
+                          Text(
+                            '${sets.length} sets',
+                            style: AppTextStyles.withColor(
+                              AppTextStyles.cardSubtitle,
+                              theme.colorScheme.onBackground,
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        ...sets.asMap().entries.map((entry) {
-                          final i = entry.key + 1;
-                          final set = entry.value;
-                          final weight = set['weight'];
-                          final reps = set['reps'];
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      ...sets.asMap().entries.map((entry) {
+                        final i = entry.key + 1;
+                        final set = entry.value;
+                        final weight = set['weight'];
+                        final reps = set['reps'];
 
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 4),
-                            child: Text(
-                              'Set $i: $weight lbs × $reps reps',
-                              style: AppTextStyles.withColor(
-                                AppTextStyles.listItem,
-                                theme.colorScheme.onBackground,
-                              ),
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 4),
+                          child: Text(
+                            'Set $i: $weight lbs × $reps reps',
+                            style: AppTextStyles.withColor(
+                              AppTextStyles.listItem,
+                              theme.colorScheme.onBackground,
                             ),
-                          );
-                        }).toList(),
-                      ],
-                    ),
+                          ),
+                        );
+                      }).toList(),
+                    ],
                   ),
                 );
               }).toList(),
             ] else ...[
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Text(
-                    'No history found for this exercise.',
-                    style: AppTextStyles.withColor(
-                      AppTextStyles.listItem,
-                      theme.colorScheme.onBackground,
-                    ),
+              GymPalCard(
+                padding: const EdgeInsets.all(16),
+                child: Text(
+                  'No history found for this exercise.',
+                  style: AppTextStyles.withColor(
+                    AppTextStyles.listItem,
+                    theme.colorScheme.onBackground,
                   ),
                 ),
               ),
