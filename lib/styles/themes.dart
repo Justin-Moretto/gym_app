@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class AppThemes {
   // Updated color palette - more neutral with subtle purple accents
-  static const Color kPrimaryPurple = Color.fromARGB(255, 107, 62, 167);
+  static const Color kPrimaryPurple = Color.fromARGB(255, 127, 82, 187);
   static const Color kSecondaryPurple = Color(0xFF4A4A4A);
   static const Color kAccentPurple = Color(0xFF7B68EE);
   static const Color kTertiaryPurple = Color.fromARGB(255, 117, 66, 141);

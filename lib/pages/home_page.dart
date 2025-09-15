@@ -125,6 +125,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
                 labelText: "My Data & Trends",
               ),
+              const Divider(height: 32, thickness: 1, indent: 40, endIndent: 40),
+              buildDaysSinceLastSessionText(daysSinceLastSession),
+              const Divider(height: 32, thickness: 1, indent: 40, endIndent: 40),
               MainPageButton(
                 backGroundColor: theme.colorScheme.tertiary,
                 onPressed: () {
@@ -137,8 +140,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
                 labelText: "Log New Workout",
               ),
-              const SizedBox(height: 24),
-              buildDaysSinceLastSessionText(daysSinceLastSession),
             ],
           ),
         ),

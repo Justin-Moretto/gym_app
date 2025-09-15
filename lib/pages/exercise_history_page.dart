@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 import '../custom_widgets.dart';
 import '../helpers.dart';
 import '../styles/text_styles.dart';
+import 'log_workout_page.dart';
 
 class ExerciseHistoryPage extends StatefulWidget {
   const ExerciseHistoryPage({super.key});
@@ -17,6 +19,9 @@ class _ExerciseHistoryPageState extends State<ExerciseHistoryPage> {
   List<DateTime> availableDates = [];
   int currentDateIndex = 0;
   bool showRecentLifts = false;
+  bool showCalendar = false;
+  CalendarFormat _calendarFormat = CalendarFormat.month;
+  DateTime _focusedDay = DateTime.now();
 
   @override
   void initState() {
@@ -77,7 +82,41 @@ class _ExerciseHistoryPageState extends State<ExerciseHistoryPage> {
   void _toggleRecentLifts() {
     setState(() {
       showRecentLifts = !showRecentLifts;
+      showCalendar = false;
     });
+  }
+
+  void _toggleCalendar() {
+    setState(() {
+      showCalendar = !showCalendar;
+      showRecentLifts = false;
+    });
+  }
+
+  void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
+    setState(() {
+      selectedDate = selectedDay;
+      _focusedDay = focusedDay;
+      showCalendar = false;
+      
+      // Update currentDateIndex if the selected date is in availableDates
+      final index = availableDates.indexWhere((date) => 
+        date.year == selectedDay.year && 
+        date.month == selectedDay.month && 
+        date.day == selectedDay.day
+      );
+      if (index != -1) {
+        currentDateIndex = index;
+      }
+    });
+  }
+
+  bool _hasWorkoutOnDate(DateTime date) {
+    return availableDates.any((availableDate) => 
+      availableDate.year == date.year && 
+      availableDate.month == date.month && 
+      availableDate.day == date.day
+    );
   }
 
   Future<List<Map<String, dynamic>>> _getSessionExercisesForDate(
@@ -209,8 +248,109 @@ class _ExerciseHistoryPageState extends State<ExerciseHistoryPage> {
       backgroundColor: theme.colorScheme.background,
       body: Column(
         children: [
-          // Date Selector - only show when not in recent lifts mode
-          if (availableDates.isNotEmpty && !showRecentLifts) ...[
+          // Recent Lifts Toggle Button - always visible
+          if (availableDates.isNotEmpty) ...[
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: _toggleRecentLifts,
+                      icon: Icon(
+                        showRecentLifts ? Icons.list : Icons.history,
+                        color: theme.colorScheme.onSecondary,
+                      ),
+                      label: Text(
+                        showRecentLifts ? 'Show by Date' : 'Show Recent Lifts',
+                        style: AppTextStyles.withColor(AppTextStyles.buttonSecondary, theme.colorScheme.onSecondary),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: theme.colorScheme.secondary,
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+          
+          // Calendar Widget
+          if (showCalendar) ...[
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: theme.colorScheme.onSurface.withOpacity(0.2),
+                ),
+              ),
+              child: TableCalendar<dynamic>(
+                firstDay: DateTime.utc(2020, 1, 1),
+                lastDay: DateTime.utc(2030, 12, 31),
+                focusedDay: _focusedDay,
+                calendarFormat: _calendarFormat,
+                eventLoader: (day) {
+                  return _hasWorkoutOnDate(day) ? ['workout'] : [];
+                },
+                startingDayOfWeek: StartingDayOfWeek.monday,
+                calendarStyle: CalendarStyle(
+                  outsideDaysVisible: false,
+                  weekendTextStyle: TextStyle(color: theme.colorScheme.onSurface),
+                  defaultTextStyle: TextStyle(color: theme.colorScheme.onSurface),
+                  holidayTextStyle: TextStyle(color: theme.colorScheme.onSurface),
+                  selectedTextStyle: TextStyle(color: theme.colorScheme.onPrimary),
+                  todayTextStyle: TextStyle(
+                    color: theme.colorScheme.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  selectedDecoration: BoxDecoration(
+                    color: theme.colorScheme.primary,
+                    shape: BoxShape.circle,
+                  ),
+                  todayDecoration: BoxDecoration(
+                    color: theme.colorScheme.primary.withOpacity(0.3),
+                    shape: BoxShape.circle,
+                  ),
+                  markerDecoration: BoxDecoration(
+                    color: theme.colorScheme.primary,
+                    shape: BoxShape.circle,
+                  ),
+                  markersMaxCount: 1,
+                  markerSize: 6,
+                  markerMargin: const EdgeInsets.symmetric(horizontal: 1),
+                ),
+                headerStyle: HeaderStyle(
+                  formatButtonVisible: true,
+                  titleCentered: true,
+                  formatButtonShowsNext: false,
+                  formatButtonDecoration: BoxDecoration(
+                    color: theme.colorScheme.secondary,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  formatButtonTextStyle: TextStyle(
+                    color: theme.colorScheme.onSecondary,
+                  ),
+                  titleTextStyle: AppTextStyles.withColor(AppTextStyles.cardTitle, theme.colorScheme.onSurface),
+                ),
+                onDaySelected: _onDaySelected,
+                onFormatChanged: (format) {
+                  setState(() {
+                    _calendarFormat = format;
+                  });
+                },
+                onPageChanged: (focusedDay) {
+                  _focusedDay = focusedDay;
+                },
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+          
+          // Date Selector - only show when not in recent lifts mode and calendar is hidden
+          if (availableDates.isNotEmpty && !showRecentLifts && !showCalendar) ...[
             Container(
               padding: const EdgeInsets.all(16),
               child: Row(
@@ -229,9 +369,7 @@ class _ExerciseHistoryPageState extends State<ExerciseHistoryPage> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () {
-                      // TODO: Show calendar picker
-                    },
+                    onTap: _toggleCalendar,
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       decoration: BoxDecoration(
@@ -263,34 +401,7 @@ class _ExerciseHistoryPageState extends State<ExerciseHistoryPage> {
               ),
             ),
           ],
-          // Recent Lifts Toggle Button - always visible
-          if (availableDates.isNotEmpty) ...[
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: _toggleRecentLifts,
-                      icon: Icon(
-                        showRecentLifts ? Icons.list : Icons.history,
-                        color: theme.colorScheme.onSecondary,
-                      ),
-                      label: Text(
-                        showRecentLifts ? 'Show by Date' : 'Show Recent Lifts',
-                        style: AppTextStyles.withColor(AppTextStyles.buttonSecondary, theme.colorScheme.onSecondary),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: theme.colorScheme.secondary,
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 8),
-          ],
+          
           // Content
           Expanded(
             child: showRecentLifts 
@@ -309,6 +420,7 @@ class _ExerciseHistoryPageState extends State<ExerciseHistoryPage> {
 
     final startOfDay = DateTime(selectedDate!.year, selectedDate!.month, selectedDate!.day);
     final endOfDay = startOfDay.add(const Duration(days: 1));
+    final hasWorkout = _hasWorkoutOnDate(selectedDate!);
 
     return FutureBuilder<List<Map<String, dynamic>>>(
       future: _getSessionExercisesForDate(supabase, startOfDay, endOfDay),
@@ -318,10 +430,47 @@ class _ExerciseHistoryPageState extends State<ExerciseHistoryPage> {
         } else if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          // No workout logged for this date - show option to start new workout
           return Center(
-            child: Text(
-              'No exercises logged on ${Helpers.formatDate(selectedDate!)}',
-              style: TextStyle(color: theme.colorScheme.onBackground),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.fitness_center,
+                  size: 64,
+                  color: theme.colorScheme.onBackground.withOpacity(0.5),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'No workout logged on ${Helpers.formatDate(selectedDate!)}',
+                  style: AppTextStyles.withColor(AppTextStyles.cardTitle, theme.colorScheme.onBackground),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Start logging your workout for this day',
+                  style: AppTextStyles.withOpacity(AppTextStyles.cardSubtitle, theme.colorScheme.onBackground, 0.7),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LogWorkoutPage(),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.add),
+                  label: const Text('Log Workout'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: theme.colorScheme.primary,
+                    foregroundColor: theme.colorScheme.onPrimary,
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  ),
+                ),
+              ],
             ),
           );
         }

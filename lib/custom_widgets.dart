@@ -23,12 +23,15 @@ class MainPageButton extends StatelessWidget {
         backgroundColor: backGroundColor ?? theme.colorScheme.secondary,
         foregroundColor: theme.colorScheme.onSecondary,
         elevation: 8,
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
       child: Text(
         labelText,
         style: AppTextStyles.withColor(AppTextStyles.mainPageButton, theme.colorScheme.onSecondary),
+        textAlign: TextAlign.center,
+        overflow: TextOverflow.ellipsis,
+        maxLines: 1,
       ),
     );
   }

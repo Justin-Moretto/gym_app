@@ -29,7 +29,7 @@ class AppTextStyles {
   );
 
   static const TextStyle mainPageButton = TextStyle(
-    fontSize: 40,
+    fontSize: 28,
     fontWeight: FontWeight.bold,
   );
 
